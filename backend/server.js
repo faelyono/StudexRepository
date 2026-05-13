@@ -25,6 +25,7 @@ app.use('/api/leaderboard', require('./routes/leaderboard'));
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV }));
+app.get('/', (req, res) => res.json({ status: 'server-online' }));
 
 // ── Serve React build in production ────────────────────
 if (process.env.NODE_ENV === 'production') {
@@ -48,8 +49,8 @@ const PORT = process.env.PORT || 5000;
     await sequelize.sync({ alter: true });
     console.log('✅ Database synced');
 
-    app.listen(PORT, () => {
-      console.log(`🚀 Studex server running on http://localhost:${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Studex server running on port ${PORT}`);
       console.log(`   API base: http://localhost:${PORT}/api`);
     });
   } catch (err) {
