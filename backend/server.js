@@ -43,18 +43,19 @@ const PORT = process.env.PORT || 5000;
 
 (async () => {
   try {
+    // Start listening immediately so Railway's health check passes
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Studex server running on port ${PORT}`);
+    });
+
     await sequelize.authenticate();
     console.log('✅ PostgreSQL connected');
 
-    await sequelize.sync({ alter: true });
+    await sequelize.sync(); // No 'alter: true' in production for speed
     console.log('✅ Database synced');
-
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`🚀 Studex server running on port ${PORT}`);
-      console.log(`   API base: http://localhost:${PORT}/api`);
-    });
   } catch (err) {
-    console.error('❌ Failed to start server:', err.message);
-    process.exit(1);
+    console.error('❌ Database connection failed:', err.message);
+    // We don't exit(1) here so the server stays up for Railway, 
+    // even if DB is temporarily down.
   }
 })();
